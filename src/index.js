@@ -1,18 +1,41 @@
-// Import the React and ReactDOM libraries
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-// if (module.hot) {
-//   module.hot.accept();
-// };
+if (module.hot) {
+  module.hot.accept();
+}
 
-// Create a react component
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-const App = () => {
-	return <div> Hi there! </div>;
-};
+    // THIS IS THE ONLY TIME we do direct assignment
+    // to this.state
+    this.state = { lat: null, errorMessage: "" };
 
+    window.navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // we called setstate!!!!
+        this.setState({ lat: position.coords.latitude });
+      },
+      (err) => {
+        this.setState({ errorMessage: err.message });
+      }
+    );
+  }
 
+  // React says we have to define render!!
+  render() {
+    if (this.state.errorMessage && !this.state.lat) {
+      return <div>Error: {this.state.errorMessage}</div>;
+    }
 
-ReactDOM.render(<App />, document.querySelector('#root')
-);
+    if (!this.state.errorMessage && this.state.lat) {
+      return <div>Latitude: {this.state.lat}</div>;
+    }
+
+    return <div>Loading!</div>;
+  }
+}
+
+ReactDOM.render(<App />, document.querySelector("#root"));
